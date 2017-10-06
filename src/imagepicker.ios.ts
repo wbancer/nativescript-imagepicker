@@ -19,6 +19,7 @@ const IMAGE_HEIGHT = 80;
 interface ImageOptions {
     maxWidth?: number;
     maxHeight?: number;
+    iosAspectRatio?: "fill" | "fit";
 }
 
 export function create(options?): ImagePicker {
@@ -343,6 +344,7 @@ class ImagePickerPH extends ImagePicker {
         return new Promise<image_source.ImageSource>((resolve, reject) => {
             let size: CGSize = options ? CGSizeMake(options.maxWidth, options.maxHeight) : PHImageManagerMaximumSize;
             let resizeMode = PHImageRequestOptions.alloc().init();
+            let aspectRatio = (options && options.iosAspectRatio && options.iosAspectRatio == 'fit') ? PHImageContentMode.AspectFit : PHImageContentMode.AspectFill;
 
             // TODO: Decide whether it is benefical to use PHImageRequestOptionsResizeModeFast
             //       Accuracy vs Performance. It is probably best to expose these as iOS specific options.
@@ -356,7 +358,7 @@ class ImagePickerPH extends ImagePicker {
             PHImageManager.defaultManager().requestImageForAssetTargetSizeContentModeOptionsResultHandler(
                 image,
                 size,
-                PHImageContentMode.AspectFill,
+                aspectRatio,
                 resizeMode,
                 (createdImage, data) => {
                     if (createdImage) {
